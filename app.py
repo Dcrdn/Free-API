@@ -122,5 +122,24 @@ def getProfile():
     except Exception as e:
 	    return(str(e))
 
+@app.route("/explore")
+def explore():
+    userId=request.args.get('userID')
+    numberProfiles=request.args.get('size')
+    try:
+        usuario = Usuarios.query.filter_by(id=userId).first()
+        intereses=usuario.interes
+        victimas=Usuarios.query.filter_by(genero="male").limit(numberProfiles).all()
+        dic={}
+        for num in range(0,len(victimas)):
+            idVictima=victimas[num].id
+            fotoPerfil=victimas[num].fotoPerfil
+            name=victimas[num].nombre
+            data={"id":idVictima, "name":name,"imagen":fotoPerfil}
+            dic[num+1]=data
+        return json.dumps(dic)
+    except Exception as e:
+	    return(str(e))
+
 if __name__ == '__main__':
     app.run()
