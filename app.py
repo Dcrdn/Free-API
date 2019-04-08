@@ -2,14 +2,15 @@ import os
 import json
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-from models import Book
 from models import Usuarios
 from models import Matches
 
@@ -17,52 +18,18 @@ from models import Matches
 def hello():
     return "Hello World!"
 
-@app.route("/add")
-def add_book():
-    name=request.args.get('name')
-    author=request.args.get('author')
-    published=request.args.get('published')
-    try:
-        book=Book(
-            name=name,
-            author=author,
-            published=published
-        )
-        db.session.add(book)
-        db.session.commit()
-        return "Book added. book id={}".format(book.id)
-    except Exception as e:
-	    return(str(e))
-
-@app.route("/getall")
-def get_all():
-    try:
-        books=Book.query.all()
-        return  jsonify([e.serialize() for e in books])
-    except Exception as e:
-	    return(str(e))
-
-@app.route("/get/<id_>")
-def get_by_id(id_):
-    try:
-        book=Book.query.filter_by(id=id_).first()
-        return jsonify(book.serialize())
-    except Exception as e:
-	    return(str(e))
-
-
-@app.route("/register")
+@app.route("/register", methods = ['POST'])
 def register():
-    nombre=request.args.get('nombre')
-    apellido=request.args.get('apellido')
-    email=request.args.get('email')
-    password=request.args.get('password')
-    edad=request.args.get('edad')
-    ciudad=request.args.get('ciudad')
-    genero=request.args.get('genero')
-    estado=request.args.get('estado')
-    interes=request.args.get('interes')
-    fotoPerfil=request.args.get('fotoPerfil')
+    nombre=request.form.get('nombre')
+    apellido=request.form.get('apellido')
+    email=request.form.get('email')
+    password=request.form.get('password')
+    edad=request.form.get('edad')
+    ciudad=request.form.get('ciudad')
+    genero=request.form.get('genero')
+    estado=request.form.get('estado')
+    interes=request.form.get('interes')
+    fotoPerfil=request.form.get('fotoPerfil')
     try:
         usuario=Usuarios(
             nombre=nombre,
@@ -82,7 +49,7 @@ def register():
     except Exception as e:
 	    return(str(e))
 
-@app.route("/getUsers")
+@app.route("/getUsers", methods = ['POST', 'GET'])
 def get_users():
     try:
         usuarios=Usuarios.query.all()
@@ -90,10 +57,10 @@ def get_users():
     except Exception as e:
 	    return(str(e))
 
-@app.route("/login")
+@app.route("/login", methods = ['POST'])
 def login():
-    email=request.args.get('email')
-    password=request.args.get('password')
+    email=request.form.get('email')
+    password=request.form.get('password')
     try:
         usuario = Usuarios.query.filter_by(password=password, email=email).first()
         if(usuario==None):
@@ -104,9 +71,9 @@ def login():
     except Exception as e:
 	    return(str(e))
 
-@app.route("/getProfile")
+@app.route("/getProfile", methods = ['POST'])
 def getProfile():
-    userId=request.args.get('userID')
+    userId=request.form.get('userID')
     try:
         usuario = Usuarios.query.filter_by(id=userId).first()
         name= usuario.nombre
@@ -123,10 +90,10 @@ def getProfile():
     except Exception as e:
 	    return(str(e))
 
-@app.route("/explore")
+@app.route("/explore", methods = ['POST'])
 def explore():
-    userId=request.args.get('userID')
-    numberProfiles=request.args.get('size')
+    userId=request.form.get('userID')
+    numberProfiles=request.form.get('size')
     try:
         usuario = Usuarios.query.filter_by(id=userId).first()
         intereses=usuario.interes
@@ -142,10 +109,10 @@ def explore():
     except Exception as e:
 	    return(str(e))
 
-@app.route("/addMatch")
+@app.route("/addMatch", methods = ['POST'])
 def addMatch():
-    userId=request.args.get('userId')
-    matchWith=request.args.get('matchcWith')
+    userId=request.form.get('userId')
+    matchWith=request.form.get('matchcWith')
     try:
         match=Matches(
             who=userId,
@@ -157,9 +124,9 @@ def addMatch():
     except Exception as e:
 	    return(str(e))
 
-@app.route("/getMatches")
+@app.route("/getMatches", methods = ['POST'])
 def getMatches():
-    userId=request.args.get('userId')
+    userId=request.form.get('userId')
     try:
         #matches=Matches.query.all()
         matches = Matches.query.filter_by(who=userId).all()
