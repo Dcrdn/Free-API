@@ -67,7 +67,27 @@ class Usuarios(db.Model):
             'urlPerfil': self.fotoPerfil
         }
 
+class Matches(db.Model):
+    __tablename__ = 'matches'
 
+    id = db.Column(db.Integer, primary_key=True)
+    who = db.Column(db.String())
+    withWhom = db.Column(db.String())
+
+
+    def __init__(self, who, withWhom):
+        self.who = who
+        self.withWhom = withWhom
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+    
+    def serialize(self):
+        return {
+            'id': self.id, 
+            'who': self.who,
+            'with whom': self.withWhom
+        }
 """
 //perfil
 nombre

@@ -11,6 +11,7 @@ db = SQLAlchemy(app)
 
 from models import Book
 from models import Usuarios
+from models import Matches
 
 @app.route("/")
 def hello():
@@ -138,6 +139,35 @@ def explore():
             data={"id":idVictima, "name":name,"imagen":fotoPerfil}
             dic[num+1]=data
         return json.dumps(dic)
+    except Exception as e:
+	    return(str(e))
+
+@app.route("/addMatch")
+def addMatch():
+    userId=request.args.get('userId')
+    matchWith=request.args.get('matchcWith')
+    try:
+        match=Matches(
+            who=userId,
+            withWhom=matchWith
+        )
+        db.session.add(match)
+        db.session.commit()
+        return "Match added. match id={}".format(match.id)
+    except Exception as e:
+	    return(str(e))
+
+@app.route("/getMatches")
+def getMatches():
+    userId=request.args.get('userId')
+    try:
+        #matches=Matches.query.all()
+        matches = Matches.query.filter_by(who=userId).all()
+        dic={}
+        for num in range(0,len(matches)):
+            data={"matchWith": matches[num].id}
+            dic[num+1]=data
+        return  json.dumps(dic)
     except Exception as e:
 	    return(str(e))
 
