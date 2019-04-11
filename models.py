@@ -36,6 +36,7 @@ class Usuarios(db.Model):
             'nombre': self.nombre,
             'apellido':self.apellido,
             'email':self.email,
+            'password':self.password,
             'edad':self.edad,
             'genero':self.genero,
             'estado':self.estado,
@@ -63,6 +64,31 @@ class Matches(db.Model):
             'id': self.id, 
             'who': self.who,
             'with whom': self.withWhom
+        }
+
+class Mensajes(db.Model):
+    __tablename__ = 'mensajes'
+
+    id = db.Column(db.Integer, primary_key=True)
+    who = db.Column(db.String())
+    toWhom = db.Column(db.String())
+    message = db.Column(db.String())
+
+
+    def __init__(self, who, toWhom, message):
+        self.who = who
+        self.toWhom = toWhom
+        self.message=message
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+    
+    def serialize(self):
+        return {
+            'id': self.id, 
+            'who': self.who,
+            'to whom': self.toWhom,
+            'message':self.message
         }
 """
 //perfil
